@@ -2,7 +2,7 @@ package com.yuanwj.springmq.model;
 
 import java.io.Serializable;
 
-public abstract class SendEntity implements Serializable {
+public  class SendEntity implements Serializable {
 
     private String routKey;
 
