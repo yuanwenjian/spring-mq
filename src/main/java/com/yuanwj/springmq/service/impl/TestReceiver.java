@@ -11,18 +11,32 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 import org.springframework.util.SerializationUtils;
 
+import java.io.IOException;
+
 @Service
 public class TestReceiver implements Receiver {
 
     private Logger LOG = LoggerFactory.getLogger(TestReceiver.class);
+
     @RabbitHandler
     @RabbitListener(queues = "test")
     @Override
-    public void receiver(Message message, Channel channel) {
+    public void receiver(Message message, Channel channel) throws Exception{
         String key = message.getMessageProperties().getReceivedRoutingKey();
         byte[] body = message.getBody();
         SendEntity sendEntity = (SendEntity) SerializationUtils.deserialize(body);
-        LOG.debug("消费成功,{},{}",sendEntity.getRoutKey(),sendEntity.getSendName());
-//        System.out.println("==========="+sendEntity.getRoutKey());
+        try {
+            channel.basicQos(100);
+            channel.basicAck(message.getMessageProperties().getDeliveryTag(), true);
+            LOG.debug("消费成功,{},{}", sendEntity.getRoutKey(), sendEntity.getSendName());
+        } catch (Exception e) {
+            LOG.debug("消费失败,routKey:{},name:{},deliveryTag:{}", sendEntity.getRoutKey(),
+                    sendEntity.getSendName(), message.getMessageProperties().getDeliveryTag());
+            try {
+                channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, false);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        }
     }
 }

@@ -21,8 +21,5 @@ public class TestSender implements Sender{
         CorrelationData correlationId = new CorrelationData(UUID.randomUUID().toString());
 
         rabbitTemplate.convertAndSend("yuanwj",sendEntity.getRoutKey(),sendEntity,correlationId);
-        String a=null;
-        System.out.println(a.length());
-        System.out.println("=============");
     }
 }

@@ -5,5 +5,5 @@ import org.springframework.amqp.core.Message;
 
 public interface Receiver {
 
-    public void receiver(Message message, Channel channel);
+    public void receiver(Message message, Channel channel) throws Exception;
 }

@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.SerializationUtils;
 
+import javax.annotation.Resource;
+
 @Configuration
 public class SpringMQConfig {
 
@@ -20,6 +22,12 @@ public class SpringMQConfig {
     private String topicExchange="yuanwj";
 
     private String queueName="test";
+
+    @Resource
+    private MqReturnCallback returnCallback;
+
+    @Resource
+    private MqConfirmCallback confirmCallback;
 
     @Bean
     public Queue queue(){
@@ -39,34 +47,9 @@ public class SpringMQConfig {
     @Bean
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory){
         RabbitTemplate template = new RabbitTemplate(connectionFactory);
-        template.setConfirmCallback(confirmCallback());
-        template.setReturnCallback(returnCallback());
+        template.setConfirmCallback(confirmCallback);
+        template.setReturnCallback(returnCallback);
+        template.setMandatory(true);
         return template;
-    }
-    @Bean
-    public RabbitTemplate.ConfirmCallback confirmCallback(){
-        RabbitTemplate.ConfirmCallback confirmCallback = new RabbitTemplate.ConfirmCallback() {
-            @Override
-            public void confirm(CorrelationData correlationData, boolean ack, String s) {
-                if (ack){
-                    LOG.debug("消息id为{}发送成功",correlationData);
-                }else {
-                    LOG.debug("消息id为{}发送失败,原因为{}",correlationData,s);
-                }
-            }
-        };
-        return confirmCallback;
-    }
-
-    public RabbitTemplate.ReturnCallback returnCallback(){
-        RabbitTemplate.ReturnCallback returnCallback = new RabbitTemplate.ReturnCallback() {
-            @Override
-            public void returnedMessage(Message message, int i, String s, String s1, String s2) {
-                LOG.debug("==================发送失败");
-                byte[] bytes = message.getBody();
-                String aa = (String) SerializationUtils.deserialize(bytes);
-            }
-        };
-        return returnCallback;
     }
 }
