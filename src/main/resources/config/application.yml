@@ -15,3 +15,10 @@ spring:
         listener:
           simple:
             acknowledge-mode: manual
+        virtual-host: /yuanwj
+        requested-heartbeat:
+
+mq:
+    topicExchange: yuanwj
+    queueName: test
+    routingKey: yuanwj.#

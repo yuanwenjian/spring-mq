@@ -18,15 +18,15 @@ public class TestReceiver implements Receiver {
 
     private Logger LOG = LoggerFactory.getLogger(TestReceiver.class);
 
-    @RabbitHandler
+//    @RabbitHandler
     @RabbitListener(queues = "test")
     @Override
     public void receiver(Message message, Channel channel) throws Exception{
+        System.out.println(Thread.currentThread().getName()+"=============");
         String key = message.getMessageProperties().getReceivedRoutingKey();
         byte[] body = message.getBody();
         SendEntity sendEntity = (SendEntity) SerializationUtils.deserialize(body);
         try {
-            channel.basicQos(100);
             channel.basicAck(message.getMessageProperties().getDeliveryTag(), true);
             LOG.debug("消费成功,{},{}", sendEntity.getRoutKey(), sendEntity.getSendName());
         } catch (Exception e) {

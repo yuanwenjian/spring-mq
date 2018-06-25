@@ -5,12 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
-import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
-import org.springframework.amqp.rabbit.support.CorrelationData;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.SerializationUtils;
 
 import javax.annotation.Resource;
 
@@ -19,9 +16,8 @@ public class SpringMQConfig {
 
     private Logger LOG = LoggerFactory.getLogger(SpringMQConfig.class);
 
-    private String topicExchange="yuanwj";
-
-    private String queueName="test";
+    @Autowired
+    private MqConfigProperties configProperties;
 
     @Resource
     private MqReturnCallback returnCallback;
@@ -31,17 +27,17 @@ public class SpringMQConfig {
 
     @Bean
     public Queue queue(){
-        return new Queue(queueName);
+        return new Queue(configProperties.getQueueName());
     }
 
     @Bean
     public Exchange exchange(){
-        return new TopicExchange(topicExchange);
+        return new TopicExchange(configProperties.getTopicExchange());
     }
 
     @Bean
     public Binding binding(Queue queue,TopicExchange exchange){
-        return BindingBuilder.bind(queue).to(exchange).with("yuanwj.#");
+        return BindingBuilder.bind(queue).to(exchange).with(configProperties.getRoutingKey());
     }
 
     @Bean
