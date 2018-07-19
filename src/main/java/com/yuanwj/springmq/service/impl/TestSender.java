@@ -22,10 +22,7 @@ public class TestSender implements Sender{
     @Override
     public void send(SendEntity sendEntity) {
 //        byte[] bytes = SerializationUtils.serialize(sendEntity);
-        for (int i=0;i<100;i++){
-            CorrelationData correlationId = new CorrelationData(UUID.randomUUID().toString());
-            System.out.println(Thread.currentThread().getName()+"=============");
-            rabbitTemplate.convertAndSend(configProperties.getTopicExchange(),sendEntity.getRoutKey(),sendEntity,correlationId);
-        }
+//        rabbitTemplate.convertAndSend(configProperties.getTopicExchange(),sendEntity.getRoutKey(),sendEntity,correlationId);
+        rabbitTemplate.convertAndSend("lazy.orange.fox","message为测试发送");
     }
 }

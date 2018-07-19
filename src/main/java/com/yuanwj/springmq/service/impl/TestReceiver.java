@@ -19,7 +19,7 @@ public class TestReceiver implements Receiver {
     private Logger LOG = LoggerFactory.getLogger(TestReceiver.class);
 
 //    @RabbitHandler
-    @RabbitListener(queues = "test")
+    @RabbitListener(queues = "yuanwj")
     @Override
     public void receiver(Message message, Channel channel) throws Exception{
         System.out.println(Thread.currentThread().getName()+"=============");
@@ -28,7 +28,28 @@ public class TestReceiver implements Receiver {
         SendEntity sendEntity = (SendEntity) SerializationUtils.deserialize(body);
         try {
             channel.basicAck(message.getMessageProperties().getDeliveryTag(), true);
-            LOG.debug("消费成功,{},{}", sendEntity.getRoutKey(), sendEntity.getSendName());
+            LOG.debug("test消费成功,{},{}", sendEntity.getRoutKey(), sendEntity.getSendName());
+        } catch (Exception e) {
+            LOG.debug("消费失败,routKey:{},name:{},deliveryTag:{}", sendEntity.getRoutKey(),
+                    sendEntity.getSendName(), message.getMessageProperties().getDeliveryTag());
+            try {
+                channel.basicNack(message.getMessageProperties().getDeliveryTag(), false, false);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+
+
+    @RabbitListener(queues = "test1")
+    public void receiverTest(Message message, Channel channel) throws Exception{
+        System.out.println(Thread.currentThread().getName()+"=============");
+//        String key = message.getMessageProperties().getReceivedRoutingKey();
+        byte[] body = message.getBody();
+        SendEntity sendEntity = (SendEntity) SerializationUtils.deserialize(body);
+        try {
+            channel.basicAck(message.getMessageProperties().getDeliveryTag(), true);
+            LOG.debug("test1消费成功,{},{}", sendEntity.getRoutKey(), sendEntity.getSendName());
         } catch (Exception e) {
             LOG.debug("消费失败,routKey:{},name:{},deliveryTag:{}", sendEntity.getRoutKey(),
                     sendEntity.getSendName(), message.getMessageProperties().getDeliveryTag());
