@@ -23,6 +23,7 @@ public class TestSender implements Sender{
     public void send(SendEntity sendEntity) {
 //        byte[] bytes = SerializationUtils.serialize(sendEntity);
 //        rabbitTemplate.convertAndSend(configProperties.getTopicExchange(),sendEntity.getRoutKey(),sendEntity,correlationId);
-        rabbitTemplate.convertAndSend("lazy.orange.fox","message为测试发送");
+//        rabbitTemplate.convertAndSend("lazy.orange.fox","message为测试发送");
+        rabbitTemplate.convertAndSend("yuanwj","lazy.orange.fox","message为测试发送");
     }
 }
