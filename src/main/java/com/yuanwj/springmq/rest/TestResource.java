@@ -23,4 +23,10 @@ public class TestResource {
         sender.send(entity);
         return message;
     }
+
+    @RequestMapping(value = "/test", method = RequestMethod.GET)
+    public String test(String word) {
+        System.out.println(word);
+        return "success";
+    }
 }
